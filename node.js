@@ -31,30 +31,32 @@ const server = http.createServer((req, res) => {
             break;
         case '/players' :
            
-      
+            function intervalRead(){
             const rl = readline.createInterface({
                 input:  fs.createReadStream('players.txt')
             });
             rl.on('line', (line) => {
 
-                function intervalRead(line){
+               
                     if(line!=''){
                         res.write(
-                            `<form action="/players" method = "POST">
+                        `
+                             <form action="/players" method = "POST">
                             <ul>
                             <li> ${line} <button  id="${line}" name ="delete" value = "${line}">DELETE</button></li>
                             
                             </ul>
-                            </form>`
-                            
+                            </form>
+                        `
                             );
+                          
                         }
-                }
+                
 
-                setInterval(intervalRead, 1000,line);
+               
             });
-          
- 
+        }
+        setTimeout(intervalRead, 1000);
             if(req.method === 'POST'){
                 let button = '';
                 req.on('data', chunk=> {
@@ -64,7 +66,10 @@ const server = http.createServer((req, res) => {
                 });
                 req.on('end', ()=> {
                     let state = parse(button);
-                    res.write(`player ${state.delete} will be deleted`);
+                    res.write(`
+                    <a href="/"> welcome page</a> </br> </br>
+                    <h2>player ${state.delete} had deleted</h2>
+                    `);
                     fs.readFile('players.txt','utf-8', function(err,files){
                         
                         var result = files.replace(state.delete,'');
@@ -95,8 +100,12 @@ const server = http.createServer((req, res) => {
                         }
                         console.log('player add successful');
                     })
-
-                    res.end(`player ${name.player} is in the list`);
+                    res.write(` </br></br>
+                           <h2>player ${name.player} is in the list</h2> </br></br>
+                           <a href="/"> welcome page</a> </br></br>
+                           <a href="/players"> players page </a>
+                    `);
+                    res.end();
                    
                 });
             break;
